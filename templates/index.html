@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Caption Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            padding-top: 50px;
+            background-color: #f5f5f5;
+        }
+
+        #drop-area {
+            border: 2px dashed #0d6efd;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            transition: background-color 0.2s;
+        }
+
+        #drop-area:hover {
+            background-color: #eaf4ff;
+        }
+
+        #preview {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            display: none;
+            border-radius: 10px;
+        }
+
+        .caption-box {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        #drop-text {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body class="container">
+    <h1 class="text-center mb-4">🖼️ Image Caption Generator</h1>
+
+    <!-- Upload Form -->
+    <form method="POST" enctype="multipart/form-data" class="text-center" id="upload-form">
+        <!-- Drop Zone -->
+        <div id="drop-area" class="mb-3">
+            <p id="drop-text">Click or drag an image here to upload</p>
+            <input class="form-control" type="file" id="image" name="image" accept="image/*" hidden required>
+            <img id="preview" src="#" alt="Image Preview">
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Caption</button>
+    </form>
+
+    <!-- Caption Output -->
+    {% if caption %}
+    <div class="caption-box text-center">
+        <h2>Generated Caption:</h2>
+        <p class="lead">{{ caption }}</p>
+    </div>
+    {% endif %}
+
+    <!-- JS for Drag & Drop + Preview -->
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const input = document.getElementById('image');
+        const preview = document.getElementById('preview');
+        const dropText = document.getElementById('drop-text');
+
+        // Open file dialog on click
+        dropArea.addEventListener('click', () => {
+            input.click();
+        });
+
+        // Preview on manual file selection
+        input.addEventListener('change', (event) => {
+            if (event.target.files.length > 0) {
+                previewFile(event.target.files[0]);
+            }
+        });
+
+        // Drag over
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('bg-light');
+        });
+
+        // Drag leave
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('bg-light');
+        });
+
+        // Drop file
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('bg-light');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                // Set the file in input field
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                input.files = dataTransfer.files;
+
+                previewFile(file);
+            }
+        });
+
+        // Show image preview
+        function previewFile(file) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                preview.src = reader.result;
+                preview.style.display = 'block';
+                dropText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
