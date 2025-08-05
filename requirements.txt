@@ -6,3 +6,4 @@ pillow
 utils
 transformers
 Pillow
+gunicorn
