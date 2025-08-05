@@ -7,3 +7,4 @@ utils
 transformers
 Pillow
 gunicorn
+torch
